@@ -294,9 +294,6 @@ st.markdown(
     .st-key-overview_panel .hero { padding-bottom:2rem; }
     .st-key-download_panel .trust-row { margin-top:1.6rem; padding-top:1.2rem; }
     .st-key-download_panel .footer-line { margin-top:1.5rem; }
-    @media(max-width:760px) {
-        [data-testid="stMain"], [data-testid="stAppViewContainer"]>.main { scroll-snap-type:y proximity; }
-    }
     @media(prefers-reduced-motion:reduce) {
         [data-testid="stMain"], [data-testid="stAppViewContainer"]>.main { scroll-behavior:auto; scroll-snap-type:none; }
     }

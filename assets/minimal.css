@@ -67,7 +67,7 @@
   .stApp,.stApp *,.stApp *::before,.stApp *::after { transition:none!important; }
 }
 
-/* Keep one vertical reading path on phones, including all three installers. */
+/* Phones keep vertical section snapping and browse installers horizontally. */
 @media(max-width:760px) {
   .hero .hero-copy { display:none; }
   .st-key-overview_panel .nav { top:max(.8rem,env(safe-area-inset-top)); left:1rem; padding-right:0; }
@@ -79,8 +79,9 @@
   .st-key-preferences button { width:64px!important; }
   .st-key-overview_panel,.st-key-download_panel { padding-top:5.5rem; min-width:0; }
   .hero h1 { font-size:clamp(2.5rem,11.5vw,4.4rem)!important; overflow-wrap:break-word; }
-  .st-key-downloads [data-testid="stHorizontalBlock"] { flex-direction:column; gap:1rem; }
-  .st-key-downloads [data-testid="stColumn"] { width:100%!important; flex:0 0 auto!important; min-width:0; min-height:0; margin:0; padding:1.25rem; }
+  .st-key-downloads { min-width:0; max-width:100%; }
+  .st-key-downloads [data-testid="stHorizontalBlock"] { flex-direction:row; flex-wrap:nowrap; gap:1rem; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; overscroll-behavior-x:contain; scrollbar-width:thin; scrollbar-color:var(--teal) transparent; padding-bottom:.75rem; }
+  .st-key-downloads [data-testid="stColumn"] { width:calc(100% - 24px)!important; flex:0 0 calc(100% - 24px)!important; min-width:0; min-height:0; margin:0; padding:1.25rem; scroll-snap-align:start; scroll-snap-stop:always; }
   .st-key-downloads [data-testid="stColumn"]:hover { transform:none; }
   .st-key-downloads .platform-copy { min-height:0; }
   .st-key-download_panel .trust-row { grid-template-columns:1fr; }

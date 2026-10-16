@@ -13,8 +13,9 @@ built with Streamlit. This repository contains the landing page only.
 - Language and theme preferences preserved in the URL and internal page links.
 - Smooth scroll snapping between two sections: overview and downloads, with
   features and footer included in the download section.
-- Phone layout hides the hero description and stacks all three installer cards.
-  Touch scrolling stays within the download section until its top is reached;
+- Phone layout hides the hero description and shows the three installers in a
+  horizontal carousel with snapping on each card. Vertical section snapping is
+  preserved. Scrolling stays within tall download sections until their top is reached;
   language and theme changes preserve the reading position.
 - Public Privacy Policy and Terms of Service pages in both languages.
 

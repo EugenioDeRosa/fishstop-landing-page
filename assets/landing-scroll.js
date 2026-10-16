@@ -95,23 +95,31 @@
     const current = scroller.scrollTop;
     const index = current >= (positions[0] + positions[1]) / 2 ? 1 : 0;
     const direction = event.deltaY > 0 ? 1 : -1;
+    // Tall download sections must scroll back to their top before leaving them.
+    if (index === 1 && direction < 0 && current > positions[1] + 2) return;
     const next = index + direction;
     if (next < 0 || next >= panels.length) return;
     event.preventDefault();
     scheduleJump(positions[next]);
   };
   let touchStart = null;
-  const onTouchStart = event => { touchStart = event.touches.length === 1 ? event.touches[0].clientY : null; };
+  const onTouchStart = event => {
+    touchStart = event.touches.length === 1
+      ? {x: event.touches[0].clientX, y: event.touches[0].clientY} : null;
+  };
   const onTouchMove = event => {
     if (event.target.closest?.('.st-key-preferences')) return;
+    if (event.touches.length !== 1) { touchStart = null; return; }
     if (touchStart === null || win.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const delta = touchStart.y - event.touches[0].clientY;
+    if (Math.abs(touchStart.x - event.touches[0].clientX) > Math.abs(delta)) return;
     if (Date.now() < lockedUntil) { event.preventDefault(); return; }
-    const delta = touchStart - event.touches[0].clientY;
     if (Math.abs(delta) < 20) return;
     const panels = [...doc.querySelectorAll('.st-key-overview_panel,.st-key-download_panel')];
     if (panels.length !== 2) return;
     const positions = panels.map(el => el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop);
     const index = scroller.scrollTop >= (positions[0] + positions[1]) / 2 ? 1 : 0;
+    if (index === 1 && delta < 0 && scroller.scrollTop > positions[1] + 2) return;
     const next = index + Math.sign(delta);
     if (next < 0 || next > 1) return;
     event.preventDefault();

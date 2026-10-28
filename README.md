@@ -9,7 +9,9 @@ built with Streamlit. This repository contains the landing page only.
 - Automatic installer links from the latest public release of
   [the desktop application](https://github.com/EugenioDeRosa/fishstop-desktop-email-security/releases).
 - English by default, with an Italian language option.
-- Light and dark themes, with light as the default.
+- Light and dark themes, with light as the default. The switches apply instantly in
+  the browser (one crossfade where view transitions are supported); the rerun that
+  follows only records the preference, so the page never repaints mid-switch.
 - Language and theme preferences preserved in the URL and internal page links.
 - Smooth scroll snapping between two sections: overview and downloads, with
   features and footer included in the download section.

@@ -3,7 +3,7 @@
 COPY = {
     "en": {
         "hero": "Understand an email <br>before it matters <em>too much.</em>",
-        "intro": "FishStop analyses email files, links and attachments on your device. A clear view of the signals that deserve attention, without sending the content to a server.",
+        "intro": "Everything happens on your device: emails, attachments and the AI analysis never leave it. Only technical fingerprints, such as file hashes, links and domains, are checked online against reputation services.",
         "download": "Download FishStop.", "latest": "Latest version:",
         "coming": "The first public release will be available here soon.",
         "installer": "Download installer", "releases": "View all releases", "pending": "Installer coming soon",
@@ -24,7 +24,7 @@ COPY = {
     },
     "it": {
         "hero": "Capire un’email <br>prima che conti <em>troppo.</em>",
-        "intro": "FishStop analizza file email, link e allegati sul tuo dispositivo. Una lettura chiara dei segnali che meritano attenzione, senza inviare il contenuto a un server.",
+        "intro": "Tutto avviene sul tuo dispositivo: email, allegati e analisi AI non lo lasciano mai. Online vengono verificate solo le impronte tecniche, come hash dei file, link e domini, sui servizi di reputazione.",
         "download": "Scarica FishStop.", "latest": "Versione più recente:",
         "coming": "La prima release pubblica sarà disponibile qui a breve.",
         "installer": "Scarica l’installer", "releases": "Vedi tutte le release", "pending": "Installer in arrivo",

@@ -2,7 +2,7 @@
 
 COPY = {
     "en": {
-        "hero": "Understand an email<br>before it matters <em>too much.</em>",
+        "hero": "Understand an email <br>before it matters <em>too much.</em>",
         "intro": "FishStop analyses email files, links and attachments on your device. A clear view of the signals that deserve attention, without sending the content to a server.",
         "download": "Download FishStop.", "latest": "Latest version:",
         "coming": "The first public release will be available here soon.",
@@ -20,10 +20,10 @@ COPY = {
         "privacy_eyebrow": "DATA & PRIVACY", "terms_eyebrow": "TERMS OF USE",
         "privacy_intro": "How FishStop handles account information, email content and locally stored analysis data.",
         "terms_intro": "The conditions that apply when downloading and using the FishStop desktop application.",
-        "eyebrow": "Local-first email security", "edition": "Desktop edition", "nav": "Email security · desktop",
+        "eyebrow": "Local-first email security", "edition": "Desktop edition", "nav": "Email security · desktop", "scroll_cue": "Go to downloads",
     },
     "it": {
-        "hero": "Capire un’email<br>prima che conti <em>troppo.</em>",
+        "hero": "Capire un’email <br>prima che conti <em>troppo.</em>",
         "intro": "FishStop analizza file email, link e allegati sul tuo dispositivo. Una lettura chiara dei segnali che meritano attenzione, senza inviare il contenuto a un server.",
         "download": "Scarica FishStop.", "latest": "Versione più recente:",
         "coming": "La prima release pubblica sarà disponibile qui a breve.",
@@ -41,7 +41,7 @@ COPY = {
         "privacy_eyebrow": "DATI E PRIVACY", "terms_eyebrow": "CONDIZIONI D’USO",
         "privacy_intro": "Come FishStop gestisce le informazioni dell’account, il contenuto delle email e i dati di analisi salvati localmente.",
         "terms_intro": "Le condizioni applicabili al download e all’utilizzo dell’applicazione desktop FishStop.",
-        "eyebrow": "Sicurezza email sul tuo dispositivo", "edition": "Versione desktop", "nav": "Sicurezza email · desktop",
+        "eyebrow": "Sicurezza email sul tuo dispositivo", "edition": "Versione desktop", "nav": "Sicurezza email · desktop", "scroll_cue": "Vai ai download",
     },
 }
 

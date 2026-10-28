@@ -113,3 +113,20 @@ def test_privacy_discloses_online_indicator_lookups(language):
     assert "Streamlit" in content
     assert "matched locally" not in content
     assert "confrontati localmente" not in content
+
+
+def test_stylesheets_do_not_change_when_switching_theme():
+    # The browser switches the theme instantly; reruns must not repaint the page.
+    def styles(app):
+        return [item.value for item in app.markdown if item.value.lstrip().startswith("<style>")]
+
+    app = render()
+    light = styles(app)
+    app.button(key="theme_button").click().run()
+    dark = styles(app)
+    assert len(light) == len(dark)
+    changed = [index for index, (before, after) in enumerate(zip(light, dark)) if before != after]
+    # Only the pre-script fallback differs, and only for pages without data-fs-theme.
+    assert len(changed) == 1
+    assert ":root:not([data-fs-theme])" in dark[changed[0]]
+    assert ':root[data-fs-theme="dark"]' in light[changed[0] - 1]

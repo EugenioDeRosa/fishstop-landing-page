@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from html import escape
 from base64 import b64encode
 from pathlib import Path
@@ -55,9 +56,9 @@ def change_theme() -> None:
 
 def render_page_behavior() -> None:
     # A changed srcdoc reruns the lifecycle after each preference update.
-    revision = f"{st.session_state.site_language}:{st.session_state.site_theme}"
+    preferences = json.dumps({"lang": st.session_state.site_language, "theme": st.session_state.site_theme})
     script = (Path(__file__).parent / "assets" / "landing-scroll.js").read_text(encoding="utf-8")
-    components.html(f"<script>/* {revision} */" + script + "</script>", height=0)
+    components.html(f"<script>const FS_PREFS = {preferences};\n" + script + "</script>", height=0)
 
 
 def t(key: str) -> str:
@@ -245,25 +246,43 @@ st.markdown("""<style>
 
 minimal_style = (Path(__file__).parent / "assets" / "minimal.css").read_text(encoding="utf-8")
 st.markdown("<style>" + minimal_style + "</style>", unsafe_allow_html=True)
-# Keep the same element tree in both themes so Streamlit reconciles in place.
-theme_tokens = (
-    "--ink:#f5f5f7; --muted:#a1a1a6; --canvas:#101012; --surface:#1c1c1e; --line:#333336; --teal:#54d8c1; --blue:#54d8c1; --apple-logo-filter:invert(1); --button-text:#0b1220; --icon-start:#1b2e49; --hover-line:#536a87; --subtle:#a1b0c6; --code-bg:#173d3a; --code-ink:#8aebd5; --boundary-start:#102c2a; --boundary-line:#28514b; color-scheme:dark;"
-    if dark else "color-scheme:light;"
-)
-st.markdown("<style>:root {" + theme_tokens + "}</style>", unsafe_allow_html=True)
 
+DARK_TOKENS = "--ink:#f5f5f7; --muted:#a1a1a6; --canvas:#101012; --surface:#1c1c1e; --line:#333336; --teal:#54d8c1; --blue:#54d8c1; --apple-logo-filter:invert(1); --button-text:#0b1220; --icon-start:#1b2e49; --hover-line:#536a87; --subtle:#a1b0c6; --code-bg:#173d3a; --code-ink:#8aebd5; --boundary-start:#102c2a; --boundary-line:#28514b; color-scheme:dark;"
+NEVER = ":root[data-fs-never]"
+
+
+def preference_css(dark_root: str, italian_root: str) -> str:
+    """Theme tokens and switch positions for the given root selectors."""
+    return (
+        f"{dark_root} {{{DARK_TOKENS}}}"
+        f"{dark_root} .st-key-theme_switch button::before,{dark_root} .st-key-theme_switch button::after {{ transform:translateX(28px); }}"
+        f"{dark_root} .st-key-theme_switch button::after {{ background-image:url('{PLATFORM_LOGOS['moon']}'); }}"
+        f"{italian_root} .st-key-language_switch button::before,{italian_root} .st-key-language_switch button::after {{ transform:translateX(28px); }}"
+        f"{italian_root} .st-key-language_switch button::after {{ background-image:url('{PLATFORM_LOGOS['flag-it']}'); }}"
+    )
+
+
+# The browser owns the active theme and language through data-fs-* attributes on
+# <html>, set instantly on click by landing-scroll.js. This stylesheet never changes
+# between reruns, so a rerun cannot repaint the page halfway through a switch.
 st.markdown(f"""<style>
-    .st-key-preferences button {{ position:relative; width:60px; min-height:34px; padding:0; border:0; border-radius:999px; background:var(--line); cursor:pointer; }}
+    :root {{ color-scheme:light; }}
+    .st-key-preferences button {{ position:relative; width:60px; min-height:34px; padding:0; border:0; border-radius:999px; background:var(--line); cursor:pointer; -webkit-tap-highlight-color:transparent; }}
     .st-key-preferences button p {{ position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }}
-    .st-key-preferences button::before {{ content:""; position:absolute; left:3px; top:4px; width:26px; height:26px; border-radius:50%; background:white; box-shadow:0 2px 5px #0002; transition:transform .28s ease; pointer-events:none; }}
-    .st-key-preferences button::after {{ content:""; position:absolute; left:7px; top:8px; width:18px; height:18px; background:center/contain no-repeat; transition:transform .28s ease; pointer-events:none; }}
-    .st-key-preferences button[aria-label="Italiano"],.st-key-preferences button[aria-label="English"] {{ background:var(--line); }}
-    .st-key-language_switch button::before,.st-key-language_switch button::after {{ transform:translateX({'28px' if st.session_state.site_language == 'it' else '0'}); }}
-    .st-key-theme_switch button::before,.st-key-theme_switch button::after {{ transform:translateX({'28px' if dark else '0'}); }}
-    .st-key-language_switch button::after {{ background-image:url('{PLATFORM_LOGOS['flag-it' if st.session_state.site_language == 'it' else 'flag-uk']}'); }}
-    .st-key-theme_switch button::after {{ background-image:url('{PLATFORM_LOGOS['moon' if dark else 'sun']}'); }}
+    .st-key-preferences button::before {{ content:""; position:absolute; left:3px; top:4px; width:26px; height:26px; border-radius:50%; background:white; box-shadow:0 2px 5px #0002; transition:transform .32s cubic-bezier(.3,.7,.3,1); pointer-events:none; }}
+    .st-key-preferences button::after {{ content:""; position:absolute; left:7px; top:8px; width:18px; height:18px; background:center/contain no-repeat; transition:transform .32s cubic-bezier(.3,.7,.3,1); pointer-events:none; }}
+    .st-key-language_switch button::after {{ background-image:url('{PLATFORM_LOGOS['flag-uk']}'); }}
+    .st-key-theme_switch button::after {{ background-image:url('{PLATFORM_LOGOS['sun']}'); }}
     .st-key-preferences button:focus-visible {{ outline:2px solid var(--teal); outline-offset:3px; }}
+    .st-key-preferences button:focus:not(:focus-visible) {{ outline:none; box-shadow:none; }}
+    {preference_css(':root[data-fs-theme="dark"]', ':root[data-fs-lang="it"]')}
     </style>""", unsafe_allow_html=True)
+# Before the script has run, the server's preference applies. Keep this element
+# present in every state so Streamlit updates it in place.
+st.markdown("<style>" + preference_css(
+    ":root:not([data-fs-theme])" if dark else NEVER,
+    ":root:not([data-fs-lang])" if st.session_state.site_language == "it" else NEVER,
+) + "</style>", unsafe_allow_html=True)
 
 with st.container(key="preferences"):
     language_control, theme_control = st.columns(2, gap="small")
@@ -284,7 +303,7 @@ if requested_page in {"privacy", "terms"}:
 st.markdown(
     """<style>
     [data-testid="stMain"], [data-testid="stAppViewContainer"]>.main {
-        scroll-snap-type:y mandatory; scroll-behavior:smooth;
+        scroll-snap-type:y mandatory;
     }
     .st-key-overview_panel,.st-key-download_panel {
         min-height:calc(100dvh - 3rem); scroll-snap-align:start; scroll-snap-stop:always;
@@ -305,6 +324,7 @@ with st.container(key="overview_panel"):
         f"""
         <nav class="nav"><p class="wordmark">{BRAND_MARKUP}</p><p class="nav-note">{t('nav')}</p></nav>
         <section class="hero" id="overview"><p class="eyebrow">{t('eyebrow')}</p><h1>{t('hero')}</h1><p class="hero-copy">{t('intro')}</p></section>
+        <a class="scroll-cue" href="#download" aria-label="{t('scroll_cue')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
         """,
         unsafe_allow_html=True,
     )

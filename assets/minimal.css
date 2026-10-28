@@ -58,13 +58,58 @@
 .st-key-preferences [data-testid="stButton"] { border-radius:999px; background:var(--line); }
 .st-key-preferences button * { pointer-events:none; }
 .st-key-preferences button:active { transform:none; }
-.stApp,.st-key-preferences,.st-key-downloads [data-testid="stColumn"],
-.stApp p,.stApp h1,.stApp h2,.stApp h3,.stApp a,.stApp strong,.stApp span,
-.legal-section code,.legal-nav>div a {
-  transition:background-color .35s ease,color .35s ease,border-color .35s ease,box-shadow .35s ease;
+
+/* Theme switch: the whole page crossfades once (view transition). Per-element
+   colour transitions are avoided on purpose: nested elements faded at different
+   speeds and text briefly matched its background. The switch pill is excluded
+   from the snapshot so its knob slides live. */
+.st-key-preferences { view-transition-name:fs-preferences; transition:background-color .32s ease,border-color .32s ease; }
+.st-key-preferences [data-testid="stButton"] { transition:background-color .32s ease; }
+::view-transition-old(root),::view-transition-new(root) { animation-duration:.34s; animation-timing-function:ease; }
+::view-transition-group(fs-preferences),::view-transition-new(fs-preferences) { animation:none; }
+::view-transition-old(fs-preferences) { display:none; }
+/* Streamlit dims elements while a rerun is in flight; this page reruns only to
+   record preferences, so keep everything at full strength. */
+.stApp [data-stale="true"] { opacity:1!important; transition:none!important; }
+
+/* Entrance and reveal motion. */
+@keyframes fs-rise { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+@keyframes fs-cue { 0%,100% { transform:translateY(0); } 50% { transform:translateY(5px); } }
+.hero .eyebrow,.hero h1,.hero .hero-copy { animation:fs-rise .8s cubic-bezier(.2,.7,.2,1) backwards; }
+.hero h1 { animation-delay:.08s; }
+.hero .hero-copy { animation-delay:.18s; }
+.scroll-cue { position:absolute; left:50%; bottom:1.4rem; display:grid; place-items:center; width:44px; height:44px; margin-left:-22px; border-radius:50%; color:var(--muted); -webkit-tap-highlight-color:transparent; animation:fs-rise .8s .45s cubic-bezier(.2,.7,.2,1) backwards; }
+.scroll-cue svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; animation:fs-cue 2.4s 1.4s ease-in-out infinite; }
+.stApp a.scroll-cue { color:var(--muted); text-decoration:none; }
+.stApp a.scroll-cue:hover { color:var(--teal); }
+.scroll-cue:focus-visible { outline:2px solid var(--teal); outline-offset:2px; }
+.st-key-overview_panel { position:relative; }
+/* Anchor the cue to the bottom of the overview panel, not its markdown block. */
+.st-key-overview_panel [data-testid="stElementContainer"],
+.st-key-overview_panel [data-testid="stMarkdown"],
+.st-key-overview_panel [data-testid="stMarkdownContainer"],
+.st-key-overview_panel [data-testid="stMarkdownContainer"] > div { position:static; }
+:root[data-fs-reveal="pending"] .st-key-download_panel .download-section,
+:root[data-fs-reveal="pending"] .st-key-download_panel .release-status,
+:root[data-fs-reveal="pending"] .st-key-downloads [data-testid="stColumn"],
+:root[data-fs-reveal="pending"] .st-key-download_panel .trust-row { opacity:0; }
+:root[data-fs-reveal="done"] .st-key-download_panel .download-section,
+:root[data-fs-reveal="done"] .st-key-download_panel .release-status,
+:root[data-fs-reveal="done"] .st-key-downloads [data-testid="stColumn"],
+:root[data-fs-reveal="done"] .st-key-download_panel .trust-row { animation:fs-rise .7s cubic-bezier(.2,.7,.2,1) backwards; }
+:root[data-fs-reveal="done"] .st-key-download_panel .release-status { animation-delay:.06s; }
+:root[data-fs-reveal="done"] .st-key-downloads [data-testid="stColumn"]:nth-child(1) { animation-delay:.12s; }
+:root[data-fs-reveal="done"] .st-key-downloads [data-testid="stColumn"]:nth-child(2) { animation-delay:.2s; }
+:root[data-fs-reveal="done"] .st-key-downloads [data-testid="stColumn"]:nth-child(3) { animation-delay:.28s; }
+:root[data-fs-reveal="done"] .st-key-download_panel .trust-row { animation-delay:.36s; }
+
+/* Touch screens have no hover: no sticky lifted cards after a tap. */
+@media(hover:none) {
+  .st-key-downloads [data-testid="stColumn"]:hover { transform:none; box-shadow:none; }
 }
 @media(prefers-reduced-motion:reduce) {
-  .stApp,.stApp *,.stApp *::before,.stApp *::after { transition:none!important; }
+  .stApp,.stApp *,.stApp *::before,.stApp *::after { transition:none!important; animation:none!important; }
+  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*) { animation:none!important; }
 }
 
 /* Phones keep vertical section snapping and browse installers horizontally. */
@@ -86,4 +131,14 @@
   .st-key-downloads .platform-copy { min-height:0; }
   .st-key-download_panel .trust-row { grid-template-columns:1fr; }
   .st-key-site_footer { padding-top:1.5rem; padding-bottom:env(safe-area-inset-bottom); }
+  /* Let the headline wrap by width instead of a desktop line break. */
+  .hero h1 br { display:none; }
+  .hero h1 { font-size:clamp(2.4rem,10.6vw,4.4rem)!important; text-wrap:balance; }
+  .scroll-cue { bottom:calc(.6rem + env(safe-area-inset-bottom)); }
+  /* Legal pages: same fixed top bar as home, page links below it, clear of the switches. */
+  .legal-nav { display:block; padding:4.4rem 0 0!important; margin-bottom:2.4rem!important; }
+  .legal-nav::before { content:""; position:fixed; top:0; left:0; right:0; z-index:100; height:calc(78px + env(safe-area-inset-top)); background:var(--canvas); border-bottom:1px solid var(--line); pointer-events:none; }
+  .legal-nav .wordmark { position:fixed; z-index:101; top:max(.8rem,env(safe-area-inset-top)); left:1rem; min-height:2.2rem; font-size:18px; gap:6px; }
+  .legal-nav>div { gap:.4rem; }
+  .legal-nav>div a { padding:.55rem .85rem; }
 }

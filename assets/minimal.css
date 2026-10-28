@@ -30,9 +30,20 @@
    or description that wraps cannot push one button below the others. */
 .st-key-downloads [data-testid="stHorizontalBlock"] { align-items:stretch; }
 .st-key-downloads [data-testid="stColumn"] { display:flex; flex-direction:column; }
-.st-key-downloads [data-testid="stColumn"] > [data-testid="stVerticalBlock"] { flex:1 1 auto; }
+/* Every wrapper between the card and its contents stretches. Streamlit versions
+   nest a different number of them, so match by content, not by depth. */
+.st-key-downloads [data-testid="stColumn"] div:has(h2):has([data-testid="stLinkButton"]) { display:flex!important; flex-direction:column!important; flex:1 1 auto!important; }
 .st-key-downloads [data-testid="stElementContainer"]:has([data-testid="stLinkButton"]) { margin-top:auto; }
 .st-key-downloads h2 { text-wrap:balance; }
+/* Streamlit's hidden heading-anchor icon still takes width and pushes the
+   centred title off-centre; cards don't need deep links. */
+.st-key-downloads h2 [data-testid="stHeaderActionElements"] { display:none!important; }
+/* Narrow desktop windows: some labels and titles wrap to two lines and others
+   don't. Reserve two lines for both so every card's rows line up. */
+@media(min-width:761px) and (max-width:1060px) {
+  .st-key-downloads .download-card-head { min-height:3.4rem; }
+  .st-key-downloads h2 { min-height:88px; display:flex; align-items:center; justify-content:center; }
+}
 [data-testid="stLinkButton"] a { background:#0b8276; color:white!important; min-height:2.65rem; font-weight:550; }
 [data-testid="stLinkButton"] a:hover { background:#096f65; }
 .st-key-download_panel .trust-row { margin-top:1.5rem; padding-top:1.2rem; gap:1.4rem; }

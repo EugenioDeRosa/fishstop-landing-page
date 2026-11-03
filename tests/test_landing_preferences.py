@@ -59,7 +59,7 @@ def test_preferences_survive_direct_navigation(page, language, theme):
     assert expected in content
     assert f"?lang={language}&theme={theme}" in content
     if page != "home":
-        assert content.count('class="legal-section"') == 8
+        assert content.count('class="legal-section"') == (9 if page == "privacy" else 8)
         assert len(app.get("link_button")) == 0
 
 
@@ -111,6 +111,8 @@ def test_privacy_discloses_online_indicator_lookups(language):
     assert "OTX" in content and "online" in content
     assert "Spamhaus" in content and "ipwho.is" in content
     assert "Streamlit" in content
+    assert "dns.google" in content
+    assert "Garante" in content and "GDPR" in content
     assert "matched locally" not in content
     assert "confrontati localmente" not in content
 
